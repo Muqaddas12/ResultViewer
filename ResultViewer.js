@@ -8,10 +8,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
 import ResultView from './src/components/ResultView';
 const Stack=createStackNavigator();
-export default function App() {
+export default function ResultViewer() {
   console.log('app.js')
   return (
-  
+
      <NavigationContainer>
         <StatusBar style="auto" />
         <Stack.Navigator  screenOptions={{headerShown:false}} initialRouteName='Homepage'>
@@ -19,7 +19,7 @@ export default function App() {
           <Stack.Screen name='ResultView' component ={ResultView}/>
         </Stack.Navigator>
       </NavigationContainer>
- 
+   
 
      
   

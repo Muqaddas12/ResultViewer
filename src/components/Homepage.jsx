@@ -16,10 +16,22 @@ const Homepage = ({ navigation }) => {
   /* This handle press function is used to check 
   to fetch data from the server and navigate through
   ViewResult helper imported from scr/helper/homepage */
-  const handlePress=()=>{
-
-    viewResult(session,course,semester,rollNumber,navigation)
-  }
+   const handlePress = () => {
+    try {
+      setLoading(true);
+      viewResult(session, course, semester, rollNumber, navigation)
+        .then(() => setLoading(false))
+        .catch((error) => {
+          setLoading(false);
+          console.error('Error fetching result:', error);
+          Alert.alert('Error', 'Failed to fetch result. Please try again.');
+        });
+    } catch (error) {
+      setLoading(false);
+      console.error('Unexpected error:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    }
+  };
   // Function to dynamically generate session labels
   const sessionItems = generateSessionOptions();
 //Show Course According to Session
@@ -437,7 +449,7 @@ if(session==='201819'){
   }
 
   },[course])
-
+console.log('return turn')
   return (
     <View style={styles.container}>
   
@@ -460,9 +472,6 @@ if(session==='201819'){
         onValueChange={setCourse} 
         value={course} 
       />
-
-    
-
 <Picker 
         label="Select Semester" 
         items={semestersitem}

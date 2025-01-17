@@ -1,22 +1,8 @@
-import 'react-native-gesture-handler';
-import axios from 'axios';
 import React, {useEffect, useState } from 'react';
-import { View,Image, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-
-// Reusable Picker component
-const Picker = ({ label, items, onValueChange, value }) => (
-  <>
-    <Text style={styles.label}>{label}</Text>
-    <RNPickerSelect
-      onValueChange={onValueChange}
-      value={value}
-      items={items}
-      placeholder={{ label: '-- Choose --', value: null }}
-      style={pickerStyles}
-    />
-  </>
-);
+import { View,Image, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { styles } from '../stylesheets/Homepage';
+import { Picker } from './Picker';
+import { viewResult,generateSessionOptions } from '../utils/helpers/Homepage';
 
 const Homepage = ({ navigation }) => {
   console.log('homepage')
@@ -27,61 +13,14 @@ const Homepage = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [semestersitem,setSemestersItem]=useState([])
   const [courseItem,setCourseItem]=useState([])
-  
+  /* This handle press function is used to check 
+  to fetch data from the server and navigate through
+  ViewResult helper imported from scr/helper/homepage */
+  const handlePress=()=>{
 
-  const viewResult = () => {
-
-    // Check if all fields are filled
-    if (!course || !session || !rollNumber || !semester) {
-      Alert.alert('Input Validation', 'Please fill all fields!');
-      return;
-    }
-
-    async function fetchResult() {
-      setLoading(true);
-let url=null
-      if(session==='201819'){
-         url = `http://103.57.178.67/${courese}2019`;
-      }else{
-         url = `http://103.57.178.67/S${session}/${course}${session}/${semester}.php?Enroll=${rollNumber}`;
-      }
-
-      try {
-        const response = await axios.get(url);
-        const data = response.data;
-        const rurl=response.request.responseURL
-       if(url===rurl){
-        navigation.navigate('ResultView', { data });
-       }
-       else{
-        return alert('invalid Course/Session/Semester/RollNumber')
-       }
-      } catch (error) {
-        console.error('Error fetching result:', error);
-        Alert.alert('Failed to fetch result. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchResult();
-  };
-
+    viewResult(session,course,semester,rollNumber,navigation)
+  }
   // Function to dynamically generate session labels
-  const generateSessionOptions = () => {
-    const startYear = 2018;
-    const currentYear = new Date().getFullYear();
-    const sessionOptions = [];
-    
-    for (let year = startYear; year < currentYear; year++) {
-      sessionOptions.push({
-        label: `${year}-${year + 1}`,
-        value: `${year}` + `${year + 1}`.slice(-2), // Extracts last 6 digits (e.g. 202324)
-      });
-    }
-  
-    return sessionOptions;
-  };
   const sessionItems = generateSessionOptions();
 //Show Course According to Session
      useEffect(()=>{
@@ -540,7 +479,7 @@ if(session==='201819'){
         onChangeText={setRollNumber}
       />
 
-      <TouchableOpacity onPress={viewResult} style={styles.button}>
+      <TouchableOpacity onPress={handlePress} style={styles.button}>
         <Text style={styles.buttonText}>View Result</Text>
       </TouchableOpacity>
 
@@ -549,91 +488,8 @@ if(session==='201819'){
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: 'white', // White background
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4A4A4A', // Dark gray for better contrast
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  subHeader: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#555555', // Medium-dark gray
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#666666', // Slightly lighter gray for labels
-    marginBottom: 5,
-    alignSelf: 'flex-start',
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderColor: '#AAAAAA', // Light gray border to differentiate from white
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: '#F8F8F8', // Light gray background for input fields
-    color: '#333333', // Dark text inside inputs
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#5e46b4', // Keep purple button for a strong color accent
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '80%',
-  },
-  buttonText: {
-    fontSize: 18,
-    color: 'white', // Keep white text for the purple button
-    textAlign: 'center',
-  },
-  image: {
-    width: 150,
-    height: 150,
-    resizeMode: 'contain',
-    marginBottom: 20,
-  },
-});
-
-const pickerStyles = {
-  inputAndroid: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#F8F8F8',
-    borderRadius: 10,
-    borderColor: '#AAAAAA', // Light gray border
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    color: '#333333', // Dark gray text
-    marginBottom: 20,
-  },
-  inputIOS: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#F8F8F8',
-    borderRadius: 8,
-    borderColor: '#AAAAAA',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    color: '#333333',
-    marginBottom: 20,
-  },
-};
 
 export default Homepage;
+
+
+
